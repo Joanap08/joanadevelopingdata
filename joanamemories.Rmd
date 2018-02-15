@@ -1,0 +1,85 @@
+---
+title: "Wordpress post"
+author: "Joana"
+date: "15 February 2018"
+output: html_document
+---
+
+
+
+```{r}
+knitr::opts_chunk$set(
+        echo = TRUE,
+        eval = TRUE,
+        message = FALSE,
+        error = TRUE,
+        warning = TRUE,
+        highlight = TRUE,
+        prompt = FALSE
+        )
+
+if (!require('RWordPress')) {
+        devtools::install_github(c("duncantl/XMLRPC", "duncantl/RWordPress"))
+}
+
+if (!require("knitr")) {
+        install.packages("knitr", repos = 'http://cran.wu.ac.at/')
+}
+
+library(RWordPress)
+library(XMLRPC)
+library(knitr)
+
+options(WordpressLogin = c(giswanderer1108 ='Natacha1108!'), 
+        WordpressURL = 'https://giswandererdotblog.wordpress.com/xmlrpc.php')
+
+```
+
+# Map of my childhood memories
+
+1. My favourite person in the world who I deeply miss
+2. The place of my first kiss with a real person - Ken or Barbie kisses do not count
+3. My favourite reading place when I was teenager
+4. My house where so many good memories were built up on
+5. My primary school with my Nuns
+
+```{r, echo = FALSE,eval = TRUE,message = FALSE,error = TRUE,warning = TRUE,highlight = TRUE,prompt = FALSE ,fig.height= 10, fig.width= 10}
+
+if(!require(leaflet)) install.packages("leaflet")
+if(!require(dplyr)) install.packages("dplyr")
+
+## First the longitudes of the places
+
+joanalifeLatLong <- data.frame(
+  lat = c(41.334500, 41.329673, 41.326953, 41.329107, 41.315387),
+  lng = c(-8.224959, -8.231273, -8.232324, -8.231103, -8.235568))
+
+joanaIcons<- iconList(
+  grandma=makeIcon("http://icons.iconarchive.com/icons/martin-berube/people/48/grandma-icon.png", "http://icons.iconarchive.com/icons/martin-berube/people/48/grandma-icon@2x.png",44,44),
+  kiss=makeIcon("http://icons.iconarchive.com/icons/succodesign/love-is-in-the-web/32/kiss-lips-icon.png","http://icons.iconarchive.com/icons/succodesign/love-is-in-the-web/32/kiss-lips-icon@2x.png",44,44),
+  reading=makeIcon("http://icons.iconarchive.com/icons/blackvariant/button-ui-requests-15/32/Amazon-Kindle-icon.png","http://icons.iconarchive.com/icons/blackvariant/button-ui-requests-15/32/Amazon-Kindle-icon@2x.png",44,44),
+  house=makeIcon("http://icons.iconarchive.com/icons/artdesigner/urban-stories/32/House-icon.png","http://icons.iconarchive.com/icons/artdesigner/urban-stories/32/House-icon@2x.png",44,44),
+  school=makeIcon("http://icons.iconarchive.com/icons/seanau/3d-house/32/School-icon.png","http://icons.iconarchive.com/icons/seanau/3d-house/32/School-icon@2x.png",44,44)
+)
+
+joanalifeLatLong  %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(icon = joanaIcons, popup = c("Grandma","1st kiss","My favourite reading place","My House", "My primary school"))
+
+#knit2wp('joanamemories.Rmd', title = 'Mapping childhood memories',categories = c("R", "Programming"), publish = TRUE,upload = TRUE, shortcode = TRUE) 
+```
+
+
+```{r, message=FALSE,echo=FALSE}
+postTitle = "Mapping memories. knitr"
+fileName = "joanamemories.Rmd"
+postID = 2 # for my test post
+
+knit2wp(input = fileName, 
+        title = postTitle, 
+        publish = TRUE,
+        action = "editPost",
+        postid = postID
+)
+```
